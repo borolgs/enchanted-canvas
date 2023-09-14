@@ -1,4 +1,4 @@
-import { MyPlugin } from "./plugin";
+import { EnchantedCanvasPlugin } from "./plugin";
 import "./styles";
 
-export default MyPlugin;
+export default EnchantedCanvasPlugin;

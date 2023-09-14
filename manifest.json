@@ -1,9 +1,9 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "enchanted-canvas",
+	"name": "Enchanted Canvas",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
+	"description": "This is a canvas plugin for Obsidian. This plugin extends the Obsidian Canvas.",
 	"author": "Obsidian",
 	"authorUrl": "https://obsidian.md",
 	"fundingUrl": "https://obsidian.md/pricing",

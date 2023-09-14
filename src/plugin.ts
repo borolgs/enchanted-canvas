@@ -1,11 +1,11 @@
 import { Plugin } from "obsidian";
 
-export class MyPlugin extends Plugin {
+export class EnchantedCanvasPlugin extends Plugin {
 	async onload() {
-		console.log(`${MyPlugin.name} loaded`);
+		console.log(`${EnchantedCanvasPlugin.name} loaded`);
 	}
 
 	async onunload() {
-		console.log(`${MyPlugin.name} unloaded`);
+		console.log(`${EnchantedCanvasPlugin.name} unloaded`);
 	}
 }
