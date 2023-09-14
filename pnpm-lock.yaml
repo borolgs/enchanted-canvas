@@ -5,6 +5,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': 5.29.0
   '@typescript-eslint/parser': 5.29.0
   builtin-modules: 3.3.0
+  dotenv: ^16.3.1
   esbuild: 0.17.3
   obsidian: 1.4.11
   tslib: 2.4.0
@@ -15,6 +16,7 @@ devDependencies:
   '@typescript-eslint/eslint-plugin': 5.29.0_treee22277sh3yq6pnqeflwlmi
   '@typescript-eslint/parser': 5.29.0_typescript@4.7.4
   builtin-modules: 3.3.0
+  dotenv: 16.3.1
   esbuild: 0.17.3
   obsidian: 1.4.11
   tslib: 2.4.0
@@ -421,6 +423,11 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       path-type: 4.0.0
+    dev: true
+
+  /dotenv/16.3.1:
+    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
+    engines: {node: '>=12'}
     dev: true
 
   /esbuild/0.17.3:
