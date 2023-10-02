@@ -35,6 +35,7 @@ if (!prod) {
 		fs.closeSync(fs.openSync(path.join(distDir, ".hotreload", ""), "w"));
 
 		fs.copyFileSync("manifest.json", path.join(distDir, "manifest.json"));
+		fs.copyFileSync("src/styles.css", path.join(distDir, "styles.css"));
 	}
 }
 

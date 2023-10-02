@@ -1,4 +1,3 @@
-import { EnchantedCanvasPlugin } from "./plugin";
-import "./styles";
+import { EnchantedCanvasPlugin } from "./app";
 
 export default EnchantedCanvasPlugin;

@@ -1,8 +1,18 @@
-/*
+.custom-node {
+	--radius-m: 0px;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.custom-node div {
+	border-radius: 0px;
+}
 
-If your plugin does not need CSS, delete this file.
+.custom-node.canvas-node.is-themed .canvas-node-content {
+	background-color: rgba(var(--canvas-color), 0.3);
+}
 
-*/
+.custom-node-shape-1 {
+}
+
+.custom-node-shape-2 div {
+	border-radius: 50% 50%;
+}
