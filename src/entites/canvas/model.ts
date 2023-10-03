@@ -11,7 +11,7 @@ export const onCreationMenu = createEvent<{
 	pos: Point;
 	size?: Size;
 	canvas: Canvas;
-}>({ name: "onCreationMenu" });
+}>();
 export const onSelectionMenu = createEvent<{ menu: Menu; canvas: Canvas }>();
 export const onNodeMenu = createEvent<{ menu: Menu; node: CanvasNode }>();
 export const onNodeInitialized = createEvent<{ node: CanvasNode }>();

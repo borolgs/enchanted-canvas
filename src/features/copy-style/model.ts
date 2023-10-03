@@ -6,8 +6,8 @@ import {
 	sample,
 } from "effector";
 import { Menu } from "obsidian";
-import { CanvasNode, Canvas } from "src/shared/types";
-import { $canvas, onNodeMenu, onSelectionMenu } from "src/entites/canvas";
+import { CanvasNode } from "~/shared/types";
+import { $canvas, onNodeMenu, onSelectionMenu } from "~/entites/canvas";
 
 const $color = createStore<string | null>(null);
 const copyStyle = createEvent<{ color: string }>();

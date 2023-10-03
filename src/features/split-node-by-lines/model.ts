@@ -1,8 +1,8 @@
 import { attach, createEffect, sample } from "effector";
-import { $canvas, onNodeMenu } from "src/entites/canvas";
+import { $canvas, onNodeMenu } from "~/entites/canvas";
 import { splitNodeByLines } from "./lib";
 import { Menu } from "obsidian";
-import { CanvasNode } from "src/shared/types";
+import { CanvasNode } from "~/shared/types";
 
 export const addSplitMenuFx = createEffect(
 	function addSplitNodeByLinesMenuItem({

@@ -1,4 +1,4 @@
-import { Canvas, CanvasBBox } from "src/shared/types";
+import { Canvas, CanvasBBox } from "~/shared/types";
 
 export function mergeTextNodes({ canvas }: { canvas: Canvas }) {
 	const bbox: CanvasBBox = canvas.menu.selection.bbox;

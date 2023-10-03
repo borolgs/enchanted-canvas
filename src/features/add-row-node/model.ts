@@ -1,7 +1,7 @@
 import { createEffect, sample } from "effector";
-import { $canvas } from "src/entites/canvas";
-import { hotkey } from "src/shared/keyboard";
-import { Canvas, CanvasNode } from "src/shared/types";
+import { $canvas } from "~/entites/canvas";
+import { hotkey } from "~/shared/keyboard";
+import { Canvas, CanvasNode } from "~/shared/types";
 
 const createNodeUnderCurrentFx = createEffect(
 	({ node, canvas }: { node: CanvasNode; canvas: Canvas }) => {

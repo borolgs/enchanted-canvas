@@ -1,5 +1,5 @@
 import { Plugin } from "obsidian";
-import { Canvas } from "src/shared/types";
+import { Canvas } from "~/shared/types";
 
 export function extendCanvas({
 	canvas,

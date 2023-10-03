@@ -1,7 +1,7 @@
 import { attach, createEffect, sample } from "effector";
 import { Menu } from "obsidian";
-import { $canvas, onSelectionMenu } from "src/entites/canvas";
-import { Canvas, CanvasNode } from "src/shared/types";
+import { $canvas, onSelectionMenu } from "~/entites/canvas";
+import { Canvas, CanvasNode } from "~/shared/types";
 import { mergeTextNodes } from "./lib";
 
 export const addMergeMenuItemFx = createEffect(

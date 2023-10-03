@@ -17,8 +17,8 @@ import {
 	onNodeInitialized,
 	onNodeMenu,
 	onSelectionMenu,
-} from "src/entites/canvas";
-import { hotkeys } from "src/shared/keyboard";
+} from "~/entites/canvas";
+import { hotkeys } from "~/shared/keyboard";
 
 export class EnchantedCanvasPlugin extends Plugin {
 	async onload() {

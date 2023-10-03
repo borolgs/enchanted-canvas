@@ -1,7 +1,7 @@
 import { Plugin } from "obsidian";
 import { createEvent, createStore, sample } from "effector";
 import { reset } from "patronum";
-import { $canvas, $canvasFile } from "src/entites/canvas";
+import { $canvas, $canvasFile } from "~/entites/canvas";
 
 import "../features/split-node-by-lines";
 import "../features/merge-nodes";

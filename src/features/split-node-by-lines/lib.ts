@@ -1,4 +1,4 @@
-import { CanvasNode, Canvas } from "src/shared/types";
+import { CanvasNode, Canvas } from "~/shared/types";
 
 export function splitNodeByLines({
 	node,

@@ -1,14 +1,13 @@
 import { attach, createEffect, sample } from "effector";
 import { Menu } from "obsidian";
-import { debug } from "patronum";
 import {
 	$canvas,
 	canvasLoaded,
 	onCreationMenu,
 	onNodeInitialized,
 	onNodeMenu,
-} from "src/entites/canvas";
-import { CanvasNode } from "src/shared/types";
+} from "~/entites/canvas";
+import { CanvasNode } from "~/shared/types";
 export const addElementCreationMenuItemFx = createEffect(
 	({ menu }: { menu: Menu }) => {
 		menu.addItem((item) =>
