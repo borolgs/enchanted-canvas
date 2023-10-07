@@ -7,6 +7,16 @@ import {
 	onNodeInitialized,
 	onNodeMenu,
 } from "~/entites/canvas";
+import {
+	addCustomNodeStyles,
+	changeCustomNodeShape,
+	getCustomNodeShape,
+	isCustomNode,
+	removeCustomNodeStyles,
+	turnIntoCustomNode,
+	turnIntoTextNode,
+	updateCustomNodeStyles,
+} from "~/entites/node";
 import { CanvasNode } from "~/shared/types";
 export const addElementCreationMenuItemFx = createEffect(
 	({ menu }: { menu: Menu }) => {
@@ -23,35 +33,25 @@ export const addElementCreationMenuItemFx = createEffect(
 
 export const addTurnIntoElementMenuItemFx = createEffect(
 	({ node, menu }: { node: CanvasNode; menu: Menu }) => {
-		const data = node.getData();
-
 		menu.addItem((item) => {
 			item.setTitle("Turn into shape").setSection("extra");
 			const subMenu: Menu = (item as any).setSubmenu();
 			subMenu
 				.addItem((item) => {
 					item.setTitle("Rect").onClick(() => {
-						data.subType = "element";
-						data.shape = "rect";
-						node.setData(data);
+						turnIntoCustomNode(node, "rect");
 						node.canvas.requestSave();
-
-						node.nodeEl.classList.add("custom-node");
-						node.nodeEl.addClass("custom-node-shape-1");
+						addCustomNodeStyles(node);
 					});
-					item.setChecked(node.unknownData.shape === "rect");
+					item.setChecked(getCustomNodeShape(node) === "rect");
 				})
 				.addItem((item) => {
 					item.setTitle("Circle").onClick(() => {
-						data.subType = "element";
-						data.shape = "circle";
-						node.setData(data);
+						turnIntoCustomNode(node, "circle");
 						node.canvas.requestSave();
-
-						node.nodeEl.classList.add("custom-node");
-						node.nodeEl.addClass("custom-node-shape-2");
+						addCustomNodeStyles(node);
 					});
-					item.setChecked(node.unknownData.shape === "circle");
+					item.setChecked(getCustomNodeShape(node) === "circle");
 				});
 		});
 	}
@@ -59,8 +59,6 @@ export const addTurnIntoElementMenuItemFx = createEffect(
 
 export const addSelectElementTypeMenuItemFx = createEffect(
 	({ node, menu }: { node: CanvasNode; menu: Menu }) => {
-		const data = node.getData();
-
 		menu.addSeparator();
 		menu.addItem((item) => {
 			item.setTitle("Shape").setSection("extra");
@@ -68,44 +66,25 @@ export const addSelectElementTypeMenuItemFx = createEffect(
 			subMenu
 				.addItem((item) => {
 					item.setTitle("Rect").onClick(() => {
-						data.shape = "rect";
-						node.setData(data);
+						changeCustomNodeShape(node, "rect");
 						node.canvas.requestSave();
-
-						const prevShapeClasses = Array.from(
-							node.nodeEl.classList
-						).filter((cls) => cls.startsWith("custom-node-shape-"));
-						node.nodeEl.classList.remove(...prevShapeClasses);
-						node.nodeEl.addClass("custom-node-shape-1");
+						updateCustomNodeStyles(node);
 					});
-					item.setChecked(node.unknownData.shape === "rect");
+					item.setChecked(getCustomNodeShape(node) === "rect");
 				})
 				.addItem((item) => {
 					item.setTitle("Circle").onClick(() => {
-						data.shape = "circle";
-						node.setData(data);
+						changeCustomNodeShape(node, "circle");
 						node.canvas.requestSave();
-
-						const prevShapeClasses = Array.from(
-							node.nodeEl.classList
-						).filter((cls) => cls.startsWith("custom-node-shape-"));
-						node.nodeEl.classList.remove(...prevShapeClasses);
-						node.nodeEl.addClass("custom-node-shape-2");
+						updateCustomNodeStyles(node);
 					});
-					item.setChecked(node.unknownData.shape === "circle");
+					item.setChecked(getCustomNodeShape(node) === "circle");
 				})
 				.addItem((item) => {
 					item.setTitle("Card").onClick(() => {
-						data.subType = undefined;
-						data.shape = undefined;
-						node.setData(data);
+						turnIntoTextNode(node);
 						node.canvas.requestSave();
-
-						node.nodeEl.classList.remove("custom-node");
-						const prevShapeClasses = Array.from(
-							node.nodeEl.classList
-						).filter((cls) => cls.startsWith("custom-node-shape-"));
-						node.nodeEl.classList.remove(...prevShapeClasses);
+						removeCustomNodeStyles(node);
 					});
 				});
 		});
@@ -122,10 +101,7 @@ export const addElementNodeFx = attach({
 			text: "",
 			size: { width: 200, height: 200 },
 		});
-		const data = node.getData();
-		data.subType = "element";
-		data.shape = "rect";
-		node.setData(data);
+		turnIntoCustomNode(node);
 		canvas.requestSave();
 		return { node };
 	},
@@ -134,12 +110,7 @@ export const addElementNodeFx = attach({
 export const setupCustomNodesFx = createEffect(
 	({ nodes }: { nodes: CanvasNode[] }) => {
 		for (const node of nodes) {
-			node.nodeEl.classList.add("custom-node");
-			if (node.unknownData.shape === "rect") {
-				node.nodeEl.classList.add("custom-node-shape-1");
-			} else if (node.unknownData.shape === "circle") {
-				node.nodeEl.classList.add("custom-node-shape-2");
-			}
+			addCustomNodeStyles(node);
 		}
 	}
 );
@@ -150,19 +121,19 @@ sample({
 });
 sample({
 	clock: onNodeMenu,
-	filter: ({ node }) => node.unknownData.subType === "element",
+	filter: ({ node }) => isCustomNode(node),
 	target: addSelectElementTypeMenuItemFx,
 });
 sample({
 	clock: onNodeMenu,
-	filter: ({ node }) => node.unknownData.subType !== "element",
+	filter: ({ node }) => !isCustomNode(node),
 	target: addTurnIntoElementMenuItemFx,
 });
 
 sample({
 	clock: [onNodeInitialized, addElementNodeFx.doneData],
 	filter: ({ node }) => {
-		return node.unknownData.subType === "element";
+		return isCustomNode(node);
 	},
 	fn: ({ node }) => ({ nodes: [node] }),
 	target: setupCustomNodesFx,
@@ -170,9 +141,14 @@ sample({
 sample({
 	clock: canvasLoaded,
 	fn: ({ canvas }) => ({
-		nodes: Array.from(canvas.nodes.values()).filter((node) => {
-			return node.unknownData.subType === "element";
-		}),
+		nodes: Array.from(canvas.nodes.values()).filter(isCustomNode),
 	}),
 	target: setupCustomNodesFx,
+});
+
+sample({
+	clock: [addElementNodeFx.fail],
+	fn: ({ error }) => {
+		console.error(error);
+	},
 });

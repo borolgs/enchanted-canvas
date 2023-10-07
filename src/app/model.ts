@@ -6,7 +6,7 @@ import { $canvas, $canvasFile } from "~/entites/canvas";
 import "../features/split-node-by-lines";
 import "../features/merge-nodes";
 import "../features/copy-style";
-import "../features/add-row-node";
+import "../features/add-next-node";
 import "../features/add-element-node";
 
 export const pluginLoaded = createEvent<{ plugin: Plugin }>();

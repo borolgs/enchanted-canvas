@@ -3,6 +3,7 @@ import { $canvas, onNodeMenu } from "~/entites/canvas";
 import { splitNodeByLines } from "./lib";
 import { Menu } from "obsidian";
 import { CanvasNode } from "~/shared/types";
+import { isCustomNode, isTextNode } from "~/entites/node";
 
 export const addSplitMenuFx = createEffect(
 	function addSplitNodeByLinesMenuItem({
@@ -31,6 +32,10 @@ export const splitNodeByLinesFx = attach({
 
 sample({
 	clock: onNodeMenu,
-	filter: ({ node }) => node.getData().type === "text",
+	filter: ({ node }) => isTextNode(node) && !isCustomNode(node),
 	target: addSplitMenuFx,
+});
+
+splitNodeByLinesFx.fail.watch(({ error }) => {
+	console.error(error);
 });

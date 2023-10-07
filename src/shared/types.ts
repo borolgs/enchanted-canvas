@@ -71,6 +71,11 @@ export type WorkspaceWithCanvas = {
 		ctx?: any
 	): EventRef;
 	on(
+		name: "canvas:node:initialize",
+		callback: (node: CanvasNode) => any,
+		ctx?: any
+	): EventRef;
+	on(
 		name: "canvas:node-menu",
 		callback: (menu: Menu, node: CanvasNode) => any,
 		ctx?: any

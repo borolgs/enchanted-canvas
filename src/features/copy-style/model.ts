@@ -68,3 +68,7 @@ sample({
 	fn: (_, args) => args,
 	target: addPasteStyleMenuItemFx,
 });
+
+pasteStyleFx.fail.watch(({ error }) => {
+	console.error(error);
+});

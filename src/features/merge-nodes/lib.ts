@@ -1,3 +1,4 @@
+import { isCustomNode } from "~/entites/node";
 import { Canvas, CanvasBBox } from "~/shared/types";
 
 export function mergeTextNodes({ canvas }: { canvas: Canvas }) {
@@ -14,6 +15,11 @@ export function mergeTextNodes({ canvas }: { canvas: Canvas }) {
 
 	for (let i = 0; i < selectedNodes.length; i++) {
 		const node = selectedNodes[i];
+
+		if (isCustomNode(node)) {
+			return;
+		}
+
 		if (node.y < minY) {
 			minY = node.y;
 			topNodeIdx = i;
@@ -26,7 +32,7 @@ export function mergeTextNodes({ canvas }: { canvas: Canvas }) {
 	const topNode = selectedNodes.splice(topNodeIdx, 1)[0];
 
 	let resultHeight = topNode.height;
-	let resutText: string[] = [topNode.text];
+	const resutText: string[] = [topNode.text];
 
 	for (const node of selectedNodes) {
 		resutText.push(node.text);

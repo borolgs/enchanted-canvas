@@ -3,6 +3,7 @@ import { Menu } from "obsidian";
 import { $canvas, onSelectionMenu } from "~/entites/canvas";
 import { Canvas, CanvasNode } from "~/shared/types";
 import { mergeTextNodes } from "./lib";
+import { isCustomNode, isTextNode } from "~/entites/node";
 
 export const addMergeMenuItemFx = createEffect(
 	({ menu }: { menu: Menu; canvas: Canvas }) => {
@@ -30,11 +31,15 @@ sample({
 	filter: ({ canvas }) => {
 		const selected: Set<CanvasNode> = canvas.selection;
 		for (const node of selected) {
-			if (node.getData().type !== "text") {
+			if (!isTextNode(node) || isCustomNode(node)) {
 				return false;
 			}
 		}
 		return true;
 	},
 	target: addMergeMenuItemFx,
+});
+
+mergeNodesFx.fail.watch(({ error }) => {
+	console.error(error);
 });
