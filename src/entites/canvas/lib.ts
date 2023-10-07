@@ -13,19 +13,6 @@ export function extendCanvas({
 	}
 	canvas.__extended = true;
 
-	// const _showCreationMenu = canvas.showCreationMenu.bind(canvas);
-	// canvas.showCreationMenu = function (menu: Menu, pos: Point, size?: Size) {
-	// 	_showCreationMenu(menu, pos, size);
-
-	// 	plugin.app.workspace.trigger(
-	// 		"canvas:creation-menu",
-	// 		menu,
-	// 		canvas,
-	// 		pos,
-	// 		size
-	// 	);
-	// };
-
 	const canvasPrototype = Object.getPrototypeOf(canvas);
 
 	let showCreationMenuProxy: any = null;
@@ -57,12 +44,16 @@ export function extendCanvas({
 
 	const nodePrototype = getNodePrototype(canvas);
 
-	nodePrototype.initialize = new Proxy(nodePrototype.initialize, {
-		apply: (target, thisArg, argumentsList) => {
-			plugin.app.workspace.trigger("canvas:node:initialize", thisArg);
-			return Reflect.apply(target, thisArg, argumentsList);
-		},
-	});
+	if (!nodePrototype.__extended) {
+		nodePrototype.__extended = true;
+
+		nodePrototype.initialize = new Proxy(nodePrototype.initialize, {
+			apply: (target, thisArg, argumentsList) => {
+				plugin.app.workspace.trigger("canvas:node:initialize", thisArg);
+				return Reflect.apply(target, thisArg, argumentsList);
+			},
+		});
+	}
 }
 
 export function getNodePrototype(canvas: Canvas) {

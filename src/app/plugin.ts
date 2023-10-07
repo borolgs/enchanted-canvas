@@ -8,7 +8,6 @@ import {
 	WorkspaceWithCanvas,
 } from "../shared/types";
 import {
-	canvasChanged,
 	canvasLoaded,
 	extendCanvas,
 	onConnectionMenu,
@@ -43,8 +42,15 @@ export class EnchantedCanvasPlugin extends Plugin {
 		this.registerEvent(
 			this.app.workspace.on("active-leaf-change", (leaf) => {
 				if (leaf?.view.getViewType() === "canvas") {
-					const canvasView = leaf.view as FileView;
-					canvasChanged({ file: canvasView.file! });
+					const canvasView = leaf.view as FileView & {
+						canvas: Canvas;
+					};
+					const canvas = canvasView.canvas;
+					extendCanvas({ canvas, plugin: this });
+					canvasLoaded({
+						canvas,
+						file: canvasView.file!,
+					});
 				}
 			})
 		);
@@ -69,7 +75,6 @@ export class EnchantedCanvasPlugin extends Plugin {
 		this.registerEvent(
 			workspace.on("canvas:selection-menu", (menu: Menu, canvas: any) => {
 				onSelectionMenu({ menu, canvas });
-				onCreationMenu({} as any);
 			})
 		);
 		this.registerEvent(

@@ -1,10 +1,8 @@
 import { Menu, Point, TFile } from "obsidian";
 import { Canvas, CanvasEdge, CanvasNode, Size } from "../../shared/types";
 import { createEvent, createStore, sample } from "effector";
-import { debug } from "patronum";
 
 export const canvasLoaded = createEvent<{ canvas: Canvas; file: TFile }>();
-export const canvasChanged = createEvent<{ file: TFile }>();
 
 export const onCreationMenu = createEvent<{
 	menu: Menu;
@@ -31,17 +29,9 @@ sample({
 	target: $canvas,
 });
 sample({
-	clock: canvasChanged,
+	clock: canvasLoaded,
 	source: $canvasFile,
 	filter: (prev, { file }) => prev?.path !== file?.path,
 	fn: (_, { file }) => file,
 	target: $canvasFile,
 });
-
-debug(
-	onConnectionMenu,
-	onEdgeMenu,
-	onNodeMenu,
-	onSelectionMenu,
-	onCreationMenu
-);
