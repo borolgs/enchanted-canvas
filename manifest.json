@@ -1,9 +1,9 @@
 {
 	"id": "enchanted-canvas",
 	"name": "Enchanted Canvas",
-	"version": "1.0.0",
+	"version": "0.1.0",
 	"minAppVersion": "0.15.0",
-	"description": "This is a canvas plugin for Obsidian. This plugin extends the Obsidian Canvas.",
+	"description": "This plugin extends the Obsidian Canvas.",
 	"author": "Obsidian",
 	"authorUrl": "https://obsidian.md",
 	"fundingUrl": "https://obsidian.md/pricing",

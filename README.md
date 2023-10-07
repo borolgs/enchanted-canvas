@@ -1,96 +1,126 @@
-# Obsidian Sample Plugin
+# Enchanted Canvas
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+This is a plugin for Obsidian that extends the functionality of the built-in [canvas-plugin](https://obsidian.md/canvas).
 
-This project uses Typescript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format, which contains TSDoc comments describing what it does.
+![asd](docs/features.gif)
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+Current features:
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+-   Copying styles
+-   Merging and splitting cards
+-   Custom shapes, currently only square and circle
+-   Hotkey for creating new cards or stickers in a row
 
-## First time developing plugins?
+There are bugs and glitches.
 
-Quick starting guide for new plugin devs:
+To-Do:
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+-   [ ] Fix history for custom nodes
+-   [ ] Fix CSS, especially for circles
+-   [ ] Remove duplicate edges when merging nodes
+-   [ ] Fix isEditing bug after node splitting
 
-## Releasing new releases
+## Usage
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+1. Build
+    ```bash
+    git clone git@github.com:borolgs/enchanted-canvas.git
+    pnpm i
+    pnpm build
+    ```
+2. Copy the contents of the dist folder to path/to/vault/.obsidian/plugins/enchanted-canvas.
+3. Enable the plugin:  
+   Settings -> Community plugins:
+    - Turn on community plugins
+    - Under Installed plugins, enable the **Enchanted Canvas**
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+## How it Works
 
-## Adding your plugin to the community plugin list
+Canvas emits several events that we need:
 
-- Check https://github.com/obsidianmd/obsidian-releases/blob/master/plugin-review.md
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+-   `canvas:edge-menu`
+-   `canvas:selection-menu`
+-   `canvas:node-menu`
+-   `canvas:node-connection-drop-menu`
 
-## How to use
+For anything that's missing, we can emit it ourselves by overriding the canvas and node prototypes.  
+For example, adding the `canvas:node:initialize` event:
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+```js
+const nodePrototype = getNodePrototype(canvas);
 
-## Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
-
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+nodePrototype.initialize = new Proxy(nodePrototype.initialize, {
+  apply: (target, thisArg, argumentsList) => {
+    plugin.app.workspace.trigger('canvas:node:initialize', thisArg);
+    return Reflect.apply(target, thisArg, argumentsList);
+  },
+});
 ```
 
-If you have multiple URLs, you can also do:
+We can hope that in the future, these events will become part of the public API.  
+And we can all build unique tools to suit our needs.
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
+Next, by subscribing to these events, we can extend their context menus:
+
+```js
+this.registerEvent(
+  workspace.on('canvas:node-menu', (menu: Menu, node: CanvasNode) => {
+    menu.addSeparator();
+    menu.addItem((item) =>
+      item
+        .setTitle('Copy style')
+        .setSection('extra')
+        .onClick(() => {
+          // Some node action
+        })
+    );
+  })
+);
+```
+
+For the business logic layer, I use [effector.js](https://beta.effector.dev), but it's not mandatory.  
+You can do it your way:
+
+```js
+// Create Node Effect
+const createNextNodeFx = createEffect(({ node }: { node: CanvasNode }) => {
+  const { canvas } = node;
+  const next = canvas.createTextNode({
+    pos: { x: node.x, y: node.y + node.height + 10 },
+    text: '',
+    size: { width: node.width, height: 50 },
+  });
+
+  next.setColor(node.color);
+  canvas.requestSave();
+});
+
+sample({
+  // On alt + enter
+  clock: hotkey({ modifiers: 'alt', key: 'Enter' }),
+  // Use canvas
+  source: $canvas,
+  // If selection is empty or contains not text nodes: skip
+  filter: (canvas) => {
+    if (canvas.selection.size !== 1) return false;
+
+    const node = Array.from(canvas.selection)[0];
+    if (!isTextNode(node) || !node.isEditing) {
+      return false;
     }
-}
+
+    return true;
+  },
+  // Take first node from canvas selection
+  fn: (canvas) => ({
+    canvas: canvas!,
+    node: Array.from(canvas!.selection)[0],
+  }),
+  // Run Effect
+  target: createNextNodeFx,
+});
+
+createNextNodeFx.fail.watch(({ error }) => {
+  console.error(error);
+});
 ```
-
-## API Documentation
-
-See https://github.com/obsidianmd/obsidian-api
