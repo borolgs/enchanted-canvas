@@ -18,7 +18,7 @@ To-Do:
 -   [ ] Fix history for custom nodes
 -   [ ] Fix CSS, especially for circles
 -   [ ] Remove duplicate edges when merging nodes
--   [ ] Fix isEditing bug after node splitting
+-   [x] Fix isEditing bug after node splitting
 
 ## Usage
 

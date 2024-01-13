@@ -24,6 +24,7 @@ export type Canvas = {
 		pos: Point;
 		text?: string;
 		size?: Size;
+		focus?: boolean;
 	}) => CanvasNode;
 	selection: Set<CanvasNode>;
 	edgeTo: Map<CanvasNode, Set<CanvasEdge>>;

@@ -1,6 +1,6 @@
-import { attach, createEffect, sample } from "effector";
-import { $canvas, onNodeMenu } from "~/entites/canvas";
-import { splitNodeByLines } from "./lib";
+import { createEffect, sample } from "effector";
+import { onNodeMenu } from "~/entites/canvas";
+import { SplitBy, splitNodeByLines } from "./lib";
 import { Menu } from "obsidian";
 import { CanvasNode } from "~/shared/types";
 import { isCustomNode, isTextNode } from "~/entites/node";
@@ -14,21 +14,20 @@ export const addSplitMenuFx = createEffect(
 		menu: Menu;
 	}) {
 		menu.addSeparator();
-		menu.addItem((item) =>
-			item
-				.setTitle("Split by lines")
-				.setSection("extra")
-				.onClick(() => {
-					splitNodeByLinesFx({ node });
-				})
-		);
+		menu.addItem((item) => {
+			item.setTitle("Split by").setSection("extra");
+			const subMenu: Menu = (item as any).setSubmenu();
+			for (const splitBy of SplitBy) {
+				subMenu.addItem((item) => {
+					item.setTitle(splitBy).onClick(() => {
+						splitNodeByLinesFx({ node, options: { by: splitBy } });
+					});
+				});
+			}
+		});
 	}
 );
-export const splitNodeByLinesFx = attach({
-	source: $canvas,
-	mapParams: ({ node }: any, canvas: any) => ({ node, canvas }),
-	effect: createEffect(splitNodeByLines),
-});
+export const splitNodeByLinesFx = createEffect(splitNodeByLines);
 
 sample({
 	clock: onNodeMenu,
