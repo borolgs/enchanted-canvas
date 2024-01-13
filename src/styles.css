@@ -13,6 +13,10 @@
 .custom-node-shape-1 {
 }
 
-.custom-node-shape-2 div {
+.custom-node-shape-2 > .canvas-node-container {
+	border-radius: 50% 50%;
+}
+
+.custom-node-shape-2 .canvas-node-placeholder::after {
 	border-radius: 50% 50%;
 }
