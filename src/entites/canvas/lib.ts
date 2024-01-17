@@ -42,6 +42,56 @@ export function extendCanvas({
 
 	Object.setPrototypeOf(canvas, canvasPrototypeProxy);
 
+	const nodeInteractionLayerPrototype = Object.getPrototypeOf(
+		canvas.nodeInteractionLayer
+	);
+
+	if (!nodeInteractionLayerPrototype.__extended) {
+		nodeInteractionLayerPrototype.__extended = true;
+
+		nodeInteractionLayerPrototype.render = new Proxy(
+			nodeInteractionLayerPrototype.render,
+			{
+				apply: (target, thisArg, argumentsList) => {
+					plugin.app.workspace.trigger(
+						"canvas:node-interaction-layer:render",
+						thisArg
+					);
+
+					return Reflect.apply(target, thisArg, argumentsList);
+				},
+			}
+		);
+
+		nodeInteractionLayerPrototype.setTarget = new Proxy(
+			nodeInteractionLayerPrototype.setTarget,
+			{
+				apply: (target, thisArg, argumentsList) => {
+					plugin.app.workspace.trigger(
+						"canvas:node-interaction-layer:set-target",
+						argumentsList[0]
+					);
+
+					return Reflect.apply(target, thisArg, argumentsList);
+				},
+			}
+		);
+	}
+
+	const menuPrototype = Object.getPrototypeOf(canvas.menu);
+
+	if (!menuPrototype.__extended) {
+		menuPrototype.__extended = true;
+
+		menuPrototype.render = new Proxy(menuPrototype.render, {
+			apply: (target, thisArg, argumentsList) => {
+				Reflect.apply(target, thisArg, argumentsList);
+				plugin.app.workspace.trigger("canvas:menu:render", thisArg);
+				return;
+			},
+		});
+	}
+
 	const nodePrototype = getNodePrototype(canvas);
 
 	if (!nodePrototype.__extended) {
@@ -50,6 +100,13 @@ export function extendCanvas({
 		nodePrototype.initialize = new Proxy(nodePrototype.initialize, {
 			apply: (target, thisArg, argumentsList) => {
 				plugin.app.workspace.trigger("canvas:node:initialize", thisArg);
+				return Reflect.apply(target, thisArg, argumentsList);
+			},
+		});
+
+		nodePrototype.render = new Proxy(nodePrototype.render, {
+			apply: (target, thisArg, argumentsList) => {
+				plugin.app.workspace.trigger("canvas:node:render", thisArg);
 				return Reflect.apply(target, thisArg, argumentsList);
 			},
 		});

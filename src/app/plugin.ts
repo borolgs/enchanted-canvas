@@ -13,7 +13,10 @@ import {
 	onConnectionMenu,
 	onCreationMenu,
 	onEdgeMenu,
+	onMenuRender,
 	onNodeInitialized,
+	onNodeInteractionLayerRender,
+	onNodeInteractionLayerSetTarget,
 	onNodeMenu,
 	onSelectionMenu,
 } from "~/entites/canvas";
@@ -70,6 +73,25 @@ export class EnchantedCanvasPlugin extends Plugin {
 			workspace.on("canvas:node:initialize", (node: CanvasNode) => {
 				onNodeInitialized({ node });
 			})
+		);
+
+		this.registerEvent(
+			workspace.on("canvas:menu:render", () => {
+				onMenuRender();
+			})
+		);
+		this.registerEvent(
+			workspace.on("canvas:node-interaction-layer:render", () => {
+				onNodeInteractionLayerRender();
+			})
+		);
+		this.registerEvent(
+			workspace.on(
+				"canvas:node-interaction-layer:set-target",
+				(target: CanvasNode) => {
+					onNodeInteractionLayerSetTarget({ target });
+				}
+			)
 		);
 
 		this.registerEvent(

@@ -8,9 +8,16 @@ import {
 
 export type Canvas = {
 	menu: {
+		containerEl: HTMLDivElement;
 		selection: {
 			bbox: CanvasBBox;
 		};
+		render: () => void;
+	};
+	nodeInteractionLayer: {
+		setTarget: (node: CanvasNode) => void;
+		target: null | CanvasNode;
+		render: () => void;
 	};
 	nodes: Map<AllCanvasNodeData["id"], CanvasNode>;
 	edges: Map<CanvasEdgeData["id"], CanvasEdge>;
@@ -94,6 +101,17 @@ export type WorkspaceWithCanvas = {
 	on(
 		name: "canvas:selection-menu",
 		callback: (menu: Menu, canvas: Canvas) => any,
+		ctx?: any
+	): EventRef;
+	on(name: "canvas:menu:render", callback: () => any, ctx?: any): EventRef;
+	on(
+		name: "canvas:node-interaction-layer:render",
+		callback: () => any,
+		ctx?: any
+	): EventRef;
+	on(
+		name: "canvas:node-interaction-layer:set-target",
+		callback: (node: CanvasNode) => any,
 		ctx?: any
 	): EventRef;
 } & Workspace;

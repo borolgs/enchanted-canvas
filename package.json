@@ -33,6 +33,6 @@
 	},
 	"dependencies": {
 		"effector": "22.8.6",
-		"patronum": "1.19.2"
+		"patronum": "1.20.0"
 	}
 }
