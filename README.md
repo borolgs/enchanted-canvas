@@ -2,7 +2,7 @@
 
 This is a plugin for Obsidian that extends the functionality of the built-in [canvas-plugin](https://obsidian.md/canvas).
 
-![asd](docs/features.gif)
+![features](docs/features.gif)
 
 Current features:
 
@@ -10,6 +10,8 @@ Current features:
 -   Merging and splitting cards
 -   Custom shapes, currently only square and circle
 -   Hotkey for creating new cards or stickers in a row
+-   Patched context menu and popup menu:
+    ![menu](docs/menu.png)
 
 There are bugs and glitches.
 
