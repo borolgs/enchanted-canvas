@@ -1,4 +1,5 @@
-import { CanvasNode } from "~/shared/types";
+import { randomId } from "~/shared/id";
+import { Canvas, CanvasNode } from "~/shared/types";
 
 export type CustomNodeShape = "rect" | "circle";
 
@@ -74,4 +75,29 @@ export function mapShapeToClass(shape: CustomNodeShape) {
 		case "circle":
 			return "custom-node-shape-2";
 	}
+}
+
+export function createEdge(
+	canvas: Canvas,
+	options: {
+		readonly from: CanvasNode;
+		readonly fromSide?: "top" | "bottom" | "left" | "right";
+		readonly to: CanvasNode;
+		readonly toSide?: "top" | "bottom" | "left" | "right";
+	}
+) {
+	const data = canvas.getData();
+	canvas.importData({
+		edges: [
+			...data.edges,
+			{
+				id: randomId(),
+				fromNode: options.from.id,
+				fromSide: options.fromSide ?? "right",
+				toNode: options.to.id,
+				toSide: options.toSide ?? "left",
+			},
+		],
+		nodes: data.nodes,
+	});
 }

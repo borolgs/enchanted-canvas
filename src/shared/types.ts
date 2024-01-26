@@ -14,14 +14,17 @@ export type Canvas = {
 		};
 		render: () => void;
 	};
+	addEdge: (edge: CanvasEdge) => void;
 	nodeInteractionLayer: {
 		setTarget: (node: CanvasNode) => void;
 		target: null | CanvasNode;
 		render: () => void;
 	};
+	getEdgesForNode: (node: CanvasNode) => Array<CanvasEdge>;
 	nodes: Map<AllCanvasNodeData["id"], CanvasNode>;
 	edges: Map<CanvasEdgeData["id"], CanvasEdge>;
 	data: CanvasData;
+	getData: () => CanvasData;
 	view: View;
 	pointer: Point;
 	requestSave: () => void;
@@ -40,6 +43,7 @@ export type Canvas = {
 };
 
 export type CanvasNode = {
+	id: string;
 	getData: () => AllCanvasNodeData;
 	setColor: (color: string) => void;
 	setIsEditing: (issEditing: boolean) => void;

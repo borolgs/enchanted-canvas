@@ -2,6 +2,7 @@ import { createEffect, sample } from "effector";
 import { $canvas } from "~/entites/canvas";
 import {
 	addCustomNodeStyles,
+	createEdge,
 	getCustomNodeShape,
 	isCustomNode,
 	isTextNode,
@@ -13,25 +14,53 @@ import { CanvasNode } from "~/shared/types";
 const createNextNodeFx = createEffect(({ node }: { node: CanvasNode }) => {
 	const { canvas } = node;
 	let next: CanvasNode;
+	const edges = canvas.getEdgesForNode(node);
+	const parentNode = edges.find((_) => _.to.node.id === node.id)?.from.node;
+	const siblings = parentNode
+		? canvas
+				.getEdgesForNode(parentNode)
+				.filter((_) => _.from.node.id === parentNode.id)
+				.map((_) => _.to.node)
+		: [];
+	const lastNode = siblings.length
+		? siblings[siblings.length - 1]
+		: undefined;
+	const currentNode = lastNode ?? node;
 
-	if (isCustomNode(node) && getCustomNodeShape(node) === "rect") {
+	if (
+		isCustomNode(currentNode) &&
+		getCustomNodeShape(currentNode) === "rect"
+	) {
 		next = canvas.createTextNode({
-			pos: { x: node.x + node.width + 30, y: node.y },
+			pos: {
+				x: currentNode.x + currentNode.width + 30,
+				y: currentNode.y,
+			},
 			text: "",
-			size: { width: node.width, height: node.height },
+			size: { width: currentNode.width, height: currentNode.height },
 		});
 
 		turnIntoCustomNode(next, "rect");
 		addCustomNodeStyles(next);
 	} else {
 		next = canvas.createTextNode({
-			pos: { x: node.x, y: node.y + node.height + 10 },
+			pos: {
+				x: currentNode.x,
+				y: currentNode.y + currentNode.height + 20,
+			},
 			text: "",
-			size: { width: node.width, height: 50 },
+			size: { width: 250, height: 60 },
 		});
 	}
 
 	next.setColor(node.color);
+
+	if (parentNode) {
+		createEdge(canvas, {
+			from: parentNode,
+			to: next,
+		});
+	}
 
 	canvas.requestSave();
 });
@@ -69,5 +98,58 @@ sample({
 });
 
 createNextNodeFx.fail.watch(({ error }) => {
+	console.error(error);
+});
+
+// siblings
+
+const createSiblingNodeFx = createEffect(({ node }: { node: CanvasNode }) => {
+	const { canvas } = node;
+	const next = canvas.createTextNode({
+		pos: {
+			x: node.x + node.width + 200,
+			y: node.y,
+		},
+		text: "",
+		size: { width: 250, height: 60 },
+	});
+
+	createEdge(canvas, {
+		from: node,
+		to: next,
+	});
+
+	canvas.requestSave();
+});
+
+sample({
+	clock: hotkey({
+		modifiers: "alt",
+		key: "Tab",
+	}),
+	source: $canvas,
+	filter: (canvas) => {
+		if (!canvas) return false;
+		if (canvas.selection.size !== 1) return false;
+
+		const node = Array.from(canvas.selection)[0];
+		if (!node.isEditing) {
+			return false;
+		}
+
+		if (!isTextNode(node)) {
+			return false;
+		}
+
+		return true;
+	},
+	fn: (canvas) => ({
+		canvas: canvas!,
+		node: Array.from(canvas!.selection)[0],
+	}),
+	target: createSiblingNodeFx,
+});
+
+createSiblingNodeFx.fail.watch(({ error }) => {
 	console.error(error);
 });
