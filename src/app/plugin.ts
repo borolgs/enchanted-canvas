@@ -37,7 +37,8 @@ export class EnchantedCanvasPlugin extends Plugin {
 
 				const canvas = canvasView.canvas;
 				extendCanvas({ canvas, plugin: this });
-
+				canvas.zoomBreakpoint = -100;
+                console.log(canvas.zoomBreakpoint)
 				canvasLoaded({ canvas, file: canvasView.file! });
 			}
 		}, 1000);

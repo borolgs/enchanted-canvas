@@ -16,6 +16,7 @@ export function extendCanvas({
 	const canvasPrototype = Object.getPrototypeOf(canvas);
 
 	let showCreationMenuProxy: any = null;
+	let zoomBreakpointProxy: any = null;
 
 	const canvasPrototypeProxy = new Proxy(canvasPrototype, {
 		get(target, prop, receiver) {
@@ -33,10 +34,19 @@ export function extendCanvas({
 						return Reflect.apply(target, thisArg, argumentsList);
 					},
 				});
-
 				return showCreationMenuProxy;
 			}
+			if (prop === "zoomBreakpoint") {
+            	return zoomBreakpointProxy ??= target[prop];
+            }
 			return Reflect.get(target, prop, receiver);
+		},
+		set(target, prop, value, receiver) {
+			if (prop === "zoomBreakpoint") {
+				zoomBreakpointProxy = value;
+				return true;
+			}
+			return Reflect.set(target, prop, value, receiver);
 		},
 	});
 
